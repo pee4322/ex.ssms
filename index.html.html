@@ -1,0 +1,1447 @@
+<!DOCTYPE html>
+<html lang="th" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Srilert Guidance School Enterprise System (SSMS)</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        tech: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        },
+                        navy: {
+                            800: '#1e293b',
+                            900: '#0f172a',
+                            950: '#020617',
+                        }
+                    },
+                    fontFamily: {
+                        heading: ['Prompt', 'sans-serif'],
+                        body: ['Sarabun', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Html5-QRCode Scanner Library -->
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <!-- QRCode Generator Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        body { font-family: 'Sarabun', sans-serif; }
+        h1, h2, h3, h4, h5, h6, .font-heading { font-family: 'Prompt', sans-serif; }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+        .glass-dark {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(51, 65, 85, 0.5);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="h-full flex flex-col text-slate-800 bg-slate-50 antialiased selection:bg-tech-500 selection:text-white">
+
+    <!-- TOP NAVIGATION BAR -->
+    <header class="sticky top-0 z-40 w-full bg-navy-900/95 backdrop-blur-md border-b border-slate-800 text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <!-- Brand / Logo -->
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="navigateTo('home')">
+                    <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-tech-400 to-tech-700 flex items-center justify-center text-white font-bold text-xl shadow-md border border-tech-300/30">
+                        <i class="fa-solid font-heading">SS</i>
+                    </div>
+                    <div>
+                        <span class="text-lg font-bold font-heading tracking-tight block text-white leading-tight">SRILERT GUIDANCE</span>
+                        <span class="text-xs text-tech-400 tracking-wider font-medium uppercase block">International School System</span>
+                    </div>
+                </div>
+
+                <!-- Navigation Links (Desktop) -->
+                <nav class="hidden md:flex items-center space-x-1 font-heading text-sm font-medium">
+                    <button onclick="navigateTo('home')" id="nav-home" class="nav-btn px-4 py-2 rounded-lg transition-all duration-200 text-slate-300 hover:text-white hover:bg-slate-800/80">
+                        <i class="fa-solid fa-house text-xs mr-2 text-tech-400"></i>หน้าแรก
+                    </button>
+                    <button onclick="navigateTo('executives')" id="nav-executives" class="nav-btn px-4 py-2 rounded-lg transition-all duration-200 text-slate-300 hover:text-white hover:bg-slate-800/80">
+                        <i class="fa-solid fa-user-tie text-xs mr-2 text-tech-400"></i>คณะผู้บริหาร
+                    </button>
+                    <button onclick="navigateTo('announcements')" id="nav-announcements" class="nav-btn px-4 py-2 rounded-lg transition-all duration-200 text-slate-300 hover:text-white hover:bg-slate-800/80">
+                        <i class="fa-solid fa-bullhorn text-xs mr-2 text-tech-400"></i>ข่าวประชาสัมพันธ์
+                    </button>
+                    <button onclick="navigateTo('special-program')" id="nav-special-program" class="nav-btn px-4 py-2 rounded-lg transition-all duration-200 text-slate-300 hover:text-white hover:bg-slate-800/80">
+                        <i class="fa-solid fa-flask text-xs mr-2 text-tech-400"></i>โครงการพิเศษ & วิจัย IS
+                    </button>
+                </nav>
+
+                <!-- Auth Status / Login Action -->
+                <div class="flex items-center space-x-3" id="auth-nav-container">
+                    <!-- Populated via JS -->
+                </div>
+
+                <!-- Mobile Menu Toggle Button -->
+                <div class="md:hidden flex items-center">
+                    <button onclick="toggleMobileMenu()" class="p-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 focus:outline-none">
+                        <i class="fa-solid fa-bars text-xl" id="mobile-menu-icon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Dropdown -->
+        <div id="mobile-menu" class="hidden md:hidden bg-navy-950 border-b border-slate-800 px-4 pt-2 pb-4 space-y-2 font-heading">
+            <button onclick="navigateTo('home'); toggleMobileMenu()" class="block w-full text-left px-3 py-2 rounded-md text-slate-300 hover:bg-slate-800 hover:text-white">
+                <i class="fa-solid fa-house w-6 text-tech-400"></i>หน้าแรก
+            </button>
+            <button onclick="navigateTo('executives'); toggleMobileMenu()" class="block w-full text-left px-3 py-2 rounded-md text-slate-300 hover:bg-slate-800 hover:text-white">
+                <i class="fa-solid fa-user-tie w-6 text-tech-400"></i>คณะผู้บริหาร
+            </button>
+            <button onclick="navigateTo('announcements'); toggleMobileMenu()" class="block w-full text-left px-3 py-2 rounded-md text-slate-300 hover:bg-slate-800 hover:text-white">
+                <i class="fa-solid fa-bullhorn w-6 text-tech-400"></i>ข่าวประชาสัมพันธ์
+            </button>
+            <button onclick="navigateTo('special-program'); toggleMobileMenu()" class="block w-full text-left px-3 py-2 rounded-md text-slate-300 hover:bg-slate-800 hover:text-white">
+                <i class="fa-solid fa-flask w-6 text-tech-400"></i>โครงการพิเศษ & วิจัย IS
+            </button>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="flex-grow" id="app-container">
+        <!-- Dynamic Views Injected Here -->
+    </main>
+
+    <!-- SYSTEM FOOTER -->
+    <footer class="bg-navy-950 text-slate-400 text-sm border-t border-slate-800 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <!-- Col 1: Brand Info -->
+                <div class="space-y-4 md:col-span-1">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-9 h-9 rounded-lg bg-tech-600 flex items-center justify-center text-white font-bold font-heading">SS</div>
+                        <span class="text-white font-heading font-bold text-base tracking-wide">โรงเรียนศรีเลิศนานาชาติ</span>
+                    </div>
+                    <p class="text-xs text-slate-400 leading-relaxed">
+                        Srilert Guidance School Enterprise Information & Management System (SSMS). มุ่งมั่นพัฒนาศักยภาพผู้เรียนสู่นวัตกรรมระดับสากลด้วยคุณธรรมและปัญญา
+                    </p>
+                    <div class="flex space-x-3 pt-2">
+                        <a href="#" class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-slate-300 hover:bg-tech-600 hover:text-white transition"><i class="fa-brands fa-facebook-f text-xs"></i></a>
+                        <a href="#" class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-slate-300 hover:bg-tech-600 hover:text-white transition"><i class="fa-brands fa-line text-xs"></i></a>
+                        <a href="#" class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-slate-300 hover:bg-tech-600 hover:text-white transition"><i class="fa-solid fa-globe text-xs"></i></a>
+                    </div>
+                </div>
+
+                <!-- Col 2: Official Contact Information -->
+                <div class="space-y-3">
+                    <h4 class="text-white font-heading font-semibold text-sm tracking-wider uppercase border-b border-slate-800 pb-2">ข้อมูลติดต่อทางการ</h4>
+                    <ul class="space-y-2 text-xs">
+                        <li class="flex items-start space-x-2">
+                            <i class="fa-solid fa-location-dot mt-0.5 text-tech-400"></i>
+                            <span>190 หมู่บ้านนิวยอร์ก ถนนศรีโรจน์ ตำบลศรีเลิศ อ.เมือง</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <i class="fa-solid fa-phone text-tech-400"></i>
+                            <span>092-511-0476</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <i class="fa-solid fa-envelope text-tech-400"></i>
+                            <span>ssme.ac.th@gmail.com</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <i class="fa-solid fa-globe text-tech-400"></i>
+                            <span>www.ssms.ac.th</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Col 3: Quick Links -->
+                <div class="space-y-3">
+                    <h4 class="text-white font-heading font-semibold text-sm tracking-wider uppercase border-b border-slate-800 pb-2">ลิงก์ที่เป็นประโยชน์</h4>
+                    <ul class="space-y-2 text-xs">
+                        <li><a href="javascript:void(0)" onclick="navigateTo('announcements')" class="hover:text-tech-400 transition">ประกาศและคำสั่งโรงเรียน</a></li>
+                        <li><a href="javascript:void(0)" onclick="navigateTo('special-program')" class="hover:text-tech-400 transition">คลังงานวิจัยนวัตกรรม IS</a></li>
+                        <li><a href="javascript:void(0)" onclick="navigateTo('executives')" class="hover:text-tech-400 transition">ทำเนียบผู้บริหาร</a></li>
+                        <li><a href="javascript:void(0)" onclick="navigateTo('login')" class="hover:text-tech-400 transition">เข้าสู่ระบบสารสนเทศ (SSMS Portal)</a></li>
+                    </ul>
+                </div>
+
+                <!-- Col 4: Educational Networks -->
+                <div class="space-y-3">
+                    <h4 class="text-white font-heading font-semibold text-sm tracking-wider uppercase border-b border-slate-800 pb-2">เครือข่ายทางการศึกษา</h4>
+                    <div class="space-y-2 text-xs">
+                        <a href="https://www.moe.go.th" target="_blank" class="block p-2 rounded bg-slate-900 border border-slate-800 hover:border-tech-500 transition">
+                            <div class="font-semibold text-slate-200">กระทรวงศึกษาธิการ (MoE)</div>
+                            <div class="text-slate-500 text-[10px]">Ministry of Education</div>
+                        </a>
+                        <a href="https://www.obec.go.th" target="_blank" class="block p-2 rounded bg-slate-900 border border-slate-800 hover:border-tech-500 transition">
+                            <div class="font-semibold text-slate-200">สำนักงานคณะกรรมการการศึกษาขั้นพื้นฐาน (OBEC)</div>
+                            <div class="text-slate-500 text-[10px]">Office of the Basic Education Commission</div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-t border-slate-800/80 mt-10 pt-6 flex flex-col sm:flex-row justify-between items-center text-xs text-slate-500">
+                <p>&copy; 2026 Srilert Guidance School Enterprise Management System. All rights reserved.</p>
+                <p class="mt-2 sm:mt-0 font-mono">SSMS Enterprise v4.5.0-PROD</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- GLOBAL MODAL CONTAINER -->
+    <div id="global-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-navy-950/80 backdrop-blur-sm">
+        <div id="global-modal-content" class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-slate-200 transform transition-all">
+            <!-- Modal Body Injected Dynamically -->
+        </div>
+    </div>
+
+    <!-- NOTIFICATION TOAST CONTAINER -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col space-y-2 pointer-events-none"></div>
+
+    <!-- JAVASCRIPT APPLICATION LOGIC -->
+    <script>
+        /* ==========================================================================
+           1. INITIAL DATA SEEDING & LOCAL STORAGE CONTROLLER
+           ========================================================================== */
+        const DEFAULT_USERS = [
+            { id: "usr-01", username: "se00", passwordHash: "se27062555", name: "ดร. ศรีเลิศ วิทยาประเสริฐ", role: "superadmin", department: "Executive Board", email: "director@ssms.ac.th", phone: "092-511-0476" },
+            { id: "usr-02", username: "staff01", passwordHash: "staff1234", name: "นางสาววิภาดา เอกสารอนันต์", role: "staff", department: "Academic Affairs", email: "vipada.a@ssms.ac.th", phone: "081-234-5678" },
+            { id: "usr-03", username: "tch01", passwordHash: "1234567890123", name: "อาจารย์สมชาย ปัญญาดี", role: "teacher", subject: "Computer Science & Robotics", email: "somchai.p@ssms.ac.th", phone: "089-876-5432" },
+            { id: "usr-04", username: "std01", passwordHash: "01012555", name: "นายณัฐภัทร พัฒนากุล", role: "student", studentId: "STD-2026-8801", gradeClass: "M.6/1", gpa: "3.92", email: "nattapat.p@std.ssms.ac.th" }
+        ];
+
+        const DEFAULT_ANNOUNCEMENTS = [
+            { id: "ann-01", title: "ประกาศเกียรติคุณ: เหรียญทองการแข่งขันหุ่นยนต์ระดับนานาชาติ 2026", category: "Students", pinned: true, date: "2026-10-20", author: "ฝ่ายวิชาการ", content: "ขอแสดงความยินดีกับทีมนักเรียนตัวแทนโรงเรียนศรีเลิศนานาชาติ ที่คว้าเหรียญทองการแข่งขัน International Youth Robotics Competition ณ ประเทศสิงคโปร์", docUrl: "#" },
+            { id: "ann-02", title: "กำหนดการสอบวัดผลกลางภาคเรียนที่ 2 ปีการศึกษา 2026", category: "General", pinned: true, date: "2026-10-18", author: "สำนักวัดผล", content: "ขอให้นักเรียนทุกระดับชั้นตรวจสอบตารางสอบและห้องสอบผ่านระบบ SSMS Student Portal โดยเริ่มทำการสอบในวันที่ 10 พฤศจิกายน 2026 เป็นต้นไป", docUrl: "#" },
+            { id: "ann-03", title: "การอบรมยกระดับเทคโนโลยีการจัดการเรียนรู้ AI for Educators สำหรับครู", category: "Staff", pinned: false, date: "2026-10-15", author: "ฝ่ายบุคลากร", content: "ขอเชิญคณะครูและบุคลากรเข้าร่วมสัมมนาการใช้ Generative AI ในการจัดทำแผนการเรียนรู้และสื่อการสอน ณ ห้องประชุมเกียรติยศ", docUrl: "#" }
+        ];
+
+        const DEFAULT_PROJECTS = [
+            { id: "proj-01", title: "AI-Powered Smart Hydroponics Control System", student: "นายณัฐภัทร พัฒนากุล (ม.6/1)", advisor: "อ.สมชาย ปัญญาดี", category: "AI & IoT", abstract: "โครงการศึกษาระบบควบคุมการปลูกผักไฮโดรโปนิกส์อัตโนมัติด้วยการประมวลผลภาพถ่ายด้วย AI เพื่อวิเคราะห์ปริมาณสารอาหารและค่า pH ที่เหมาะสมต่อการเติบโต", date: "2026" },
+            { id: "proj-02", title: "Eco-Friendly Biodegradable Packaging from Agricultural Waste", student: "นางสาวกานต์ดา มณีรัตน์ (ม.6/2)", advisor: "ดร.ศิริพร บุญมี", category: "Green Technology", abstract: "นวัตกรรมบรรจุภัณฑ์รักษ์โลกที่ย่อยสลายได้ตามธรรมชาติภายใน 30 วัน จากฟางข้าวและชานอ้อย ทดสอบคุณสมบัติการทนความร้อนและแรงกดดันสูง", date: "2026" },
+            { id: "proj-03", title: "Autonomous Drone for School Campus Safety Monitoring", student: "นายปัณณทัต วงศ์สวัสดิ์ (ม.5/1)", advisor: "อ.สมชาย ปัญญาดี", category: "Robotics", abstract: "โดรนตรวจการในพื้นที่โรงเรียนแบบไร้คนขับ ติดตั้งกล้องตรวจจับความร้อนและอัลกอริทึมแจ้งเตือนเหตุฉุกเฉินส่งข้อมูลเข้าสู่ห้องปฏิบัติการ รปภ. แบบ Real-time", date: "2026" }
+        ];
+
+        const DEFAULT_ATTENDANCE_LOGS = [
+            { id: "att-01", studentId: "STD-2026-8801", name: "นายณัฐภัทร พัฒนากุล", timestamp: "2026-10-25 07:48:12", status: "Present", method: "QR Scanner" },
+            { id: "att-02", studentId: "STD-2026-8802", name: "นางสาวศิริลักษณ์ แจ่มใส", timestamp: "2026-10-25 07:55:04", status: "Present", method: "QR Scanner" }
+        ];
+
+        function initDataStore() {
+            if (!localStorage.getItem('ssms_users')) {
+                localStorage.setItem('ssms_users', JSON.stringify(DEFAULT_USERS));
+            }
+            if (!localStorage.getItem('ssms_announcements')) {
+                localStorage.setItem('ssms_announcements', JSON.stringify(DEFAULT_ANNOUNCEMENTS));
+            }
+            if (!localStorage.getItem('ssms_projects')) {
+                localStorage.setItem('ssms_projects', JSON.stringify(DEFAULT_PROJECTS));
+            }
+            if (!localStorage.getItem('ssms_attendance')) {
+                localStorage.setItem('ssms_attendance', JSON.stringify(DEFAULT_ATTENDANCE_LOGS));
+            }
+        }
+
+        initDataStore();
+
+        // State Management
+        let currentUser = JSON.parse(localStorage.getItem('ssms_current_user')) || null;
+        let html5QrCodeScanner = null;
+
+        /* ==========================================================================
+           2. NAVIGATION & ROUTING CONTROLLER
+           ========================================================================== */
+        function navigateTo(pageId) {
+            const container = document.getElementById('app-container');
+            
+            // Highlight Active Nav Button
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-slate-800', 'text-white');
+                btn.classList.add('text-slate-300');
+            });
+            const activeNav = document.getElementById(`nav-${pageId}`);
+            if (activeNav) {
+                activeNav.classList.add('bg-slate-800', 'text-white');
+                activeNav.classList.remove('text-slate-300');
+            }
+
+            // Clean Scanner instance if navigating away
+            if (html5QrCodeScanner) {
+                try {
+                    html5QrCodeScanner.clear();
+                } catch(e) {}
+                html5QrCodeScanner = null;
+            }
+
+            // Route Mapping
+            switch (pageId) {
+                case 'home':
+                    renderHomePage(container);
+                    break;
+                case 'executives':
+                    renderExecutivesPage(container);
+                    break;
+                case 'announcements':
+                    renderAnnouncementsPage(container);
+                    break;
+                case 'special-program':
+                    renderSpecialProgramPage(container);
+                    break;
+                case 'login':
+                    renderLoginPage(container);
+                    break;
+                case 'dashboard':
+                    if (!currentUser) {
+                        navigateTo('login');
+                        showToast('กรุณาเข้าสู่ระบบก่อนใช้งานแดชบอร์ด', 'warning');
+                        return;
+                    }
+                    renderDashboardPage(container);
+                    break;
+                default:
+                    renderHomePage(container);
+            }
+
+            renderAuthNav();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        function renderAuthNav() {
+            const container = document.getElementById('auth-nav-container');
+            if (currentUser) {
+                container.innerHTML = `
+                    <div class="flex items-center space-x-3">
+                        <button onclick="navigateTo('dashboard')" class="flex items-center space-x-2 bg-tech-600/20 hover:bg-tech-600/30 text-tech-300 border border-tech-500/40 px-3 py-1.5 rounded-lg text-xs font-heading font-medium transition">
+                            <i class="fa-solid fa-gauge-high"></i>
+                            <span>ระบบสารสนเทศ (${getRoleLabel(currentUser.role)})</span>
+                        </button>
+                        <button onclick="logout()" class="text-slate-400 hover:text-rose-400 text-xs font-heading font-medium px-2 py-1 transition" title="ออกจากระบบ">
+                            <i class="fa-solid fa-right-from-bracket text-base"></i>
+                        </button>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <button onclick="navigateTo('login')" class="bg-gradient-to-r from-tech-500 to-tech-600 hover:from-tech-600 hover:to-tech-700 text-white font-heading text-xs font-medium px-5 py-2.5 rounded-lg shadow-md hover:shadow-tech-500/20 transition-all duration-200 flex items-center space-x-2 border border-tech-400/30">
+                        <i class="fa-solid fa-lock text-xs"></i>
+                        <span>เข้าสู่ระบบ (Portal)</span>
+                    </button>
+                `;
+            }
+        }
+
+        function getRoleLabel(role) {
+            switch(role) {
+                case 'superadmin': return 'ผู้ดูแลระบบ';
+                case 'staff': return 'เจ้าหน้าที่';
+                case 'teacher': return 'อาจารย์ผู้สอน';
+                case 'student': return 'นักเรียน';
+                default: return 'ผู้ใช้งาน';
+            }
+        }
+
+        /* ==========================================================================
+           3. PUBLIC VIEWS (HOME, EXECUTIVES, ANNOUNCEMENTS, SPECIAL PROGRAM)
+           ========================================================================== */
+        // HOME PAGE
+        function renderHomePage(container) {
+            const announcements = JSON.parse(localStorage.getItem('ssms_announcements')) || [];
+            
+            container.innerHTML = `
+                <!-- Hero Banner Section -->
+                <section class="relative bg-navy-900 text-white overflow-hidden py-20 lg:py-28 border-b border-slate-800">
+                    <div class="absolute inset-0 z-0 opacity-20 bg-[radial-gradient(#0ea5e9_1px,transparent_1px)] [background-size:16px_16px]"></div>
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                        <div class="max-w-3xl space-y-6">
+                            <div class="inline-flex items-center space-x-2 bg-tech-500/10 border border-tech-500/30 text-tech-400 px-3.5 py-1.5 rounded-full text-xs font-heading font-semibold uppercase tracking-wider">
+                                <span class="w-2 h-2 rounded-full bg-tech-400 animate-pulse"></span>
+                                <span>Official Enterprise Information System</span>
+                            </div>
+                            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold font-heading leading-tight tracking-tight text-white">
+                                Moulding Global Leaders with <span class="text-transparent bg-clip-text bg-gradient-to-r from-tech-400 to-cyan-200">Innovation & Integrity</span>
+                            </h1>
+                            <p class="text-lg text-slate-300 font-light leading-relaxed">
+                                ระบบบริหารจัดการสารสนเทศทางการศึกษาระดับองค์กร โรงเรียนศรีเลิศนานาชาติ เชื่อมโยงวิชาการ นวัตกรรมวิจัย และการดูแลผู้เรียนอย่างมีประสิทธิภาพสูงสุด
+                            </p>
+                            <div class="flex flex-wrap gap-4 pt-4">
+                                <button onclick="navigateTo('login')" class="bg-tech-500 hover:bg-tech-600 text-white font-heading font-semibold px-6 py-3 rounded-xl shadow-lg shadow-tech-500/25 transition-all duration-200 flex items-center space-x-2">
+                                    <span>เข้าสู่ระบบ SSMS Portal</span>
+                                    <i class="fa-solid fa-arrow-right text-xs"></i>
+                                </button>
+                                <button onclick="navigateTo('special-program')" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-heading font-medium px-6 py-3 rounded-xl transition-all duration-200">
+                                    <i class="fa-solid fa-flask mr-2 text-tech-400"></i>สำรวจคลังวิจัย IS
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Quick Access Cards & Announcements Split -->
+                <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-12">
+                    
+                    <!-- Quick Portals -->
+                    <div>
+                        <div class="flex items-center justify-between mb-8">
+                            <div>
+                                <h2 class="text-2xl font-bold font-heading text-slate-900">ระบบบริการผู้ใช้งาน</h2>
+                                <p class="text-sm text-slate-500">เลือกเข้าสู่พอร์ตัลตามบทบาทและภารกิจของท่าน</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div onclick="navigateTo('login')" class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md hover:border-tech-400 transition cursor-pointer group">
+                                <div class="w-12 h-12 rounded-xl bg-tech-50 text-tech-600 flex items-center justify-center text-xl mb-4 group-hover:bg-tech-500 group-hover:text-white transition">
+                                    <i class="fa-solid fa-graduation-cap"></i>
+                                </div>
+                                <h3 class="font-heading font-bold text-lg text-slate-800 mb-1">Student & Parent Portal</h3>
+                                <p class="text-xs text-slate-500 mb-4">ตรวจสอบผลการเรียน ตารางสอบ บัตรประจำตัวดิจิทัล และประวัติเวลาเรียน</p>
+                                <span class="text-xs font-heading font-semibold text-tech-600 group-hover:underline">เข้าสู่ระบบนักเรียน &rarr;</span>
+                            </div>
+
+                            <div onclick="navigateTo('login')" class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md hover:border-tech-400 transition cursor-pointer group">
+                                <div class="w-12 h-12 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center text-xl mb-4 group-hover:bg-navy-800 group-hover:text-white transition">
+                                    <i class="fa-solid fa-chalkboard-user"></i>
+                                </div>
+                                <h3 class="font-heading font-bold text-lg text-slate-800 mb-1">Faculty & Academic Portal</h3>
+                                <p class="text-xs text-slate-500 mb-4">สำหรับอาจารย์ผู้สอน สแกนเวลาเรียนด้วย QR Code บันทึกเกรด และจัดทำแผนวิชาการ</p>
+                                <span class="text-xs font-heading font-semibold text-tech-600 group-hover:underline">เข้าสู่ระบบครูอาจารย์ &rarr;</span>
+                            </div>
+
+                            <div onclick="navigateTo('login')" class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md hover:border-tech-400 transition cursor-pointer group">
+                                <div class="w-12 h-12 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center text-xl mb-4 group-hover:bg-navy-900 group-hover:text-white transition">
+                                    <i class="fa-solid fa-building-columns"></i>
+                                </div>
+                                <h3 class="font-heading font-bold text-lg text-slate-800 mb-1">Executive & Management</h3>
+                                <p class="text-xs text-slate-500 mb-4">ศูนย์บริการงานบริหาร บุคลากร กระจายข่าวสาร และการกำกับดูแลระบบระดับสูง</p>
+                                <span class="text-xs font-heading font-semibold text-tech-600 group-hover:underline">เข้าสู่ระบบผู้บริหาร/เจ้าหน้าที่ &rarr;</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Live Announcements Widget -->
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sm:p-8">
+                        <div class="flex items-center justify-between pb-6 border-b border-slate-100 mb-6">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 rounded-lg bg-tech-50 text-tech-600 flex items-center justify-center text-lg">
+                                    <i class="fa-solid fa-bullhorn"></i>
+                                </div>
+                                <div>
+                                    <h2 class="text-xl font-bold font-heading text-slate-900">ประกาศและข่าวสารล่าสุด</h2>
+                                    <p class="text-xs text-slate-500">ข่าวประชาสัมพันธ์ทางการจากสำนักบริหารโรงเรียนศรีเลิศ</p>
+                                </div>
+                            </div>
+                            <button onclick="navigateTo('announcements')" class="text-xs font-heading font-semibold text-tech-600 hover:text-tech-700">ดูทั้งหมด &rarr;</button>
+                        </div>
+
+                        <div class="space-y-4">
+                            ${announcements.slice(0, 3).map(ann => `
+                                <div class="p-4 rounded-xl border border-slate-100 bg-slate-50/50 hover:bg-slate-50 transition flex flex-col md:flex-row justify-between items-start md:items-center space-y-2 md:space-y-0">
+                                    <div class="space-y-1">
+                                        <div class="flex items-center space-x-2">
+                                            ${ann.pinned ? '<span class="bg-rose-50 text-rose-600 border border-rose-200 text-[10px] font-heading px-2 py-0.5 rounded font-bold">ด่วนที่สุด</span>' : ''}
+                                            <span class="bg-slate-200 text-slate-700 text-[10px] font-heading px-2 py-0.5 rounded">${ann.category}</span>
+                                            <span class="text-xs text-slate-400"><i class="fa-regular fa-clock mr-1"></i>${ann.date}</span>
+                                        </div>
+                                        <h4 class="font-heading font-semibold text-sm text-slate-800">${ann.title}</h4>
+                                        <p class="text-xs text-slate-500 line-clamp-1">${ann.content}</p>
+                                    </div>
+                                    <button onclick="viewAnnouncementModal('${ann.id}')" class="text-xs font-heading font-medium text-tech-600 bg-white border border-slate-200 px-3 py-1.5 rounded-lg hover:border-tech-400 transition whitespace-nowrap">
+                                        อ่านรายละเอียด
+                                    </button>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </section>
+            `;
+        }
+
+        // EXECUTIVE DIRECTORY PAGE
+        function renderExecutivesPage(container) {
+            const executives = [
+                { name: "ดร. ศรีเลิศ วิทยาประเสริฐ", title: "ผู้อำนวยการโรงเรียนศรีเลิศนานาชาติ", role: "Director", image: "https://placehold.co/400x400/0f172a/0ea5e9?text=Director", motto: "Leading Innovation with Integrity and Global Academic Excellence", contact: "director@ssms.ac.th" },
+                { name: "ดร. ศิริพร บุญมี", title: "รองผู้อำนวยการฝ่ายวิชาการและวิจัย", role: "Deputy Director", image: "https://placehold.co/400x400/1e293b/38bdf8?text=Academic+Deputy", motto: "Empowering Students through Scientific Inquiry and Critical Thinking", contact: "academic.dep@ssms.ac.th" },
+                { name: "นายสมชาย เอกอนันต์", title: "รองผู้อำนวยการฝ่ายกิจการนักเรียน", role: "Deputy Director", image: "https://placehold.co/400x400/1e293b/38bdf8?text=Student+Affairs", motto: "Fostering Character, Leadership, and Ethical Responsibility", contact: "student.affairs@ssms.ac.th" },
+                { name: "นางสาววิภาดา รัตนกุล", title: "รองผู้อำนวยการฝ่ายบริหารงานทั่วไป", role: "Deputy Director", image: "https://placehold.co/400x400/1e293b/38bdf8?text=General+Admin", motto: "Operational Integrity and Sustainable Infrastructure", contact: "general.admin@ssms.ac.th" },
+                { name: "นายอนันต์ ทรัพย์เจริญ", title: "รองผู้อำนวยการฝ่ายเทคโนโลยีสารสนเทศ", role: "Deputy Director", image: "https://placehold.co/400x400/1e293b/38bdf8?text=IT+Director", motto: "Driving Educational Transformation through Advanced Tech Systems", contact: "it.director@ssms.ac.th" }
+            ];
+
+            container.innerHTML = `
+                <section class="bg-navy-900 text-white py-12 border-b border-slate-800">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <h1 class="text-3xl font-bold font-heading">ทำเนียบคณะผู้บริหาร (Executive Directory)</h1>
+                        <p class="text-sm text-slate-400 mt-2">คณะผู้บริหารโรงเรียนศรีเลิศนานาชาติ ผู้ขับเคลื่อนวิสัยทัศน์และการศึกษาสู่มาตรฐานสากล</p>
+                    </div>
+                </section>
+
+                <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+                    <!-- Director Top Card -->
+                    <div class="mb-12">
+                        <div class="max-w-xl mx-auto bg-white rounded-2xl border border-slate-200 shadow-md overflow-hidden text-center p-8 hover:border-tech-400 transition cursor-pointer" onclick="showExecModal(0)">
+                            <img src="${executives[0].image}" class="w-32 h-32 rounded-full mx-auto border-4 border-tech-500 shadow-md mb-4 object-cover" alt="Director">
+                            <span class="bg-tech-50 text-tech-600 border border-tech-200 text-xs font-heading font-semibold px-3 py-1 rounded-full uppercase">Director</span>
+                            <h2 class="text-xl font-bold font-heading text-slate-900 mt-3">${executives[0].name}</h2>
+                            <p class="text-xs text-slate-500 mt-1">${executives[0].title}</p>
+                            <p class="text-xs italic text-slate-600 mt-4 bg-slate-50 p-3 rounded-lg border border-slate-100 font-body">"${executives[0].motto}"</p>
+                        </div>
+                    </div>
+
+                    <!-- Deputy Directors Grid -->
+                    <h3 class="text-lg font-bold font-heading text-slate-800 mb-6 border-b pb-2">รองผู้อำนวยการประจำฝ่าย</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        ${executives.slice(1).map((exec, idx) => `
+                            <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition cursor-pointer text-center group" onclick="showExecModal(${idx + 1})">
+                                <img src="${exec.image}" class="w-24 h-24 rounded-full mx-auto mb-4 border-2 border-slate-200 group-hover:border-tech-500 transition object-cover" alt="${exec.name}">
+                                <h4 class="font-heading font-bold text-slate-800 text-sm">${exec.name}</h4>
+                                <p class="text-[11px] text-slate-500 mt-1">${exec.title}</p>
+                                <span class="inline-block mt-3 text-xs font-heading text-tech-600 font-medium">ดูประวัติบริหาร &rarr;</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </section>
+            `;
+
+            window.executivesData = executives;
+        }
+
+        function showExecModal(index) {
+            const exec = window.executivesData[index];
+            const modalContent = document.getElementById('global-modal-content');
+            modalContent.innerHTML = `
+                <div class="p-6 sm:p-8 space-y-6">
+                    <div class="flex justify-between items-start">
+                        <div class="flex items-center space-x-4">
+                            <img src="${exec.image}" class="w-20 h-20 rounded-full border-2 border-tech-500 object-cover" alt="${exec.name}">
+                            <div>
+                                <span class="text-xs font-heading font-semibold text-tech-600 bg-tech-50 px-2.5 py-0.5 rounded border border-tech-200">${exec.role}</span>
+                                <h3 class="text-xl font-bold font-heading text-slate-900 mt-1">${exec.name}</h3>
+                                <p class="text-xs text-slate-500">${exec.title}</p>
+                            </div>
+                        </div>
+                        <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
+                    </div>
+
+                    <div class="border-t border-slate-100 pt-4 space-y-4">
+                        <div>
+                            <h4 class="text-xs font-heading font-semibold text-slate-500 uppercase tracking-wider">วิสัยทัศน์ & คติพจน์บริหาร</h4>
+                            <p class="text-sm font-body text-slate-700 italic mt-1 bg-slate-50 p-3 rounded-lg border">"${exec.motto}"</p>
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-heading font-semibold text-slate-500 uppercase tracking-wider">ช่องทางติดต่อทางการ</h4>
+                            <p class="text-xs font-mono text-slate-700 mt-1"><i class="fa-solid fa-envelope mr-2 text-tech-500"></i>${exec.contact}</p>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end pt-4 border-t border-slate-100">
+                        <button onclick="closeModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-heading text-xs px-4 py-2 rounded-lg font-medium">ปิดหน้าต่าง</button>
+                    </div>
+                </div>
+            `;
+            document.getElementById('global-modal').classList.remove('hidden');
+        }
+
+        // ANNOUNCEMENTS HUB PAGE
+        function renderAnnouncementsPage(container) {
+            const announcements = JSON.parse(localStorage.getItem('ssms_announcements')) || [];
+            
+            container.innerHTML = `
+                <section class="bg-navy-900 text-white py-12 border-b border-slate-800">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <h1 class="text-3xl font-bold font-heading">ศูนย์ข่าวประชาสัมพันธ์ (Announcements Hub)</h1>
+                        <p class="text-sm text-slate-400 mt-2">คำสั่ง ประกาศ และหนังสือแจ้งเวียนทางการของโรงเรียนศรีเลิศนานาชาติ</p>
+                    </div>
+                </section>
+
+                <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-8">
+                    <!-- Category Filters -->
+                    <div class="flex flex-wrap gap-2 border-b border-slate-200 pb-4">
+                        <button onclick="filterAnnouncements('All')" class="ann-filter-btn px-4 py-2 rounded-lg text-xs font-heading font-semibold bg-tech-600 text-white">ทั้งหมด</button>
+                        <button onclick="filterAnnouncements('General')" class="ann-filter-btn px-4 py-2 rounded-lg text-xs font-heading font-semibold bg-white border border-slate-200 text-slate-600 hover:bg-slate-50">ทั่วไป</button>
+                        <button onclick="filterAnnouncements('Students')" class="ann-filter-btn px-4 py-2 rounded-lg text-xs font-heading font-semibold bg-white border border-slate-200 text-slate-600 hover:bg-slate-50">สำหรับนักเรียน</button>
+                        <button onclick="filterAnnouncements('Staff')" class="ann-filter-btn px-4 py-2 rounded-lg text-xs font-heading font-semibold bg-white border border-slate-200 text-slate-600 hover:bg-slate-50">สำหรับบุคลากร</button>
+                    </div>
+
+                    <!-- List Container -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="announcements-grid">
+                        ${announcements.map(ann => renderAnnouncementCard(ann)).join('')}
+                    </div>
+                </section>
+            `;
+        }
+
+        function renderAnnouncementCard(ann) {
+            return `
+                <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-2">
+                            ${ann.pinned ? '<span class="bg-rose-50 text-rose-600 border border-rose-200 text-[10px] font-heading px-2 py-0.5 rounded font-bold">ปักหมุดด่วน</span>' : ''}
+                            <span class="bg-slate-100 text-slate-700 text-[10px] font-heading px-2 py-0.5 rounded font-medium">${ann.category}</span>
+                        </div>
+                        <span class="text-xs text-slate-400 font-mono"><i class="fa-regular fa-calendar mr-1"></i>${ann.date}</span>
+                    </div>
+                    <h3 class="text-base font-bold font-heading text-slate-900 leading-snug">${ann.title}</h3>
+                    <p class="text-xs font-body text-slate-600 line-clamp-3 leading-relaxed">${ann.content}</p>
+                    <div class="pt-4 border-t border-slate-100 flex items-center justify-between text-xs">
+                        <span class="text-slate-500 font-medium">ผู้ออกประกาศ: ${ann.author}</span>
+                        <button onclick="viewAnnouncementModal('${ann.id}')" class="text-tech-600 font-heading font-semibold hover:underline flex items-center space-x-1">
+                            <span>ดูฉบับเต็ม</span>
+                            <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function filterAnnouncements(cat) {
+            const announcements = JSON.parse(localStorage.getItem('ssms_announcements')) || [];
+            const grid = document.getElementById('announcements-grid');
+            const filtered = cat === 'All' ? announcements : announcements.filter(a => a.category === cat);
+            grid.innerHTML = filtered.length > 0 ? filtered.map(ann => renderAnnouncementCard(ann)).join('') : '<p class="text-sm text-slate-500 col-span-2 py-8 text-center">ไม่พบรายการประกาศในหมวดหมู่นี้</p>';
+        }
+
+        function viewAnnouncementModal(id) {
+            const announcements = JSON.parse(localStorage.getItem('ssms_announcements')) || [];
+            const ann = announcements.find(a => a.id === id);
+            if (!ann) return;
+
+            const modalContent = document.getElementById('global-modal-content');
+            modalContent.innerHTML = `
+                <div class="p-6 sm:p-8 space-y-6">
+                    <div class="flex justify-between items-start border-b border-slate-100 pb-4">
+                        <div class="space-y-1">
+                            <span class="bg-tech-50 text-tech-600 border border-tech-200 text-[10px] font-heading px-2.5 py-0.5 rounded font-semibold">${ann.category}</span>
+                            <h3 class="text-lg font-bold font-heading text-slate-900">${ann.title}</h3>
+                            <div class="text-xs text-slate-400 space-x-3 font-mono">
+                                <span>วันที่: ${ann.date}</span>
+                                <span>•</span>
+                                <span>โดย: ${ann.author}</span>
+                            </div>
+                        </div>
+                        <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
+                    </div>
+                    
+                    <div class="py-2 text-sm text-slate-700 leading-relaxed font-body whitespace-pre-line">
+                        ${ann.content}
+                    </div>
+
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <i class="fa-solid fa-file-pdf text-rose-500 text-2xl"></i>
+                            <div>
+                                <div class="text-xs font-heading font-semibold text-slate-800">เอกสารแนบฉบับทางการ (PDF)</div>
+                                <div class="text-[10px] text-slate-400 font-mono">Ref-Document-SSMS-${ann.id}.pdf</div>
+                            </div>
+                        </div>
+                        <button onclick="showToast('กำลังดาวน์โหลดเอกสารประกาศ...', 'info')" class="text-xs font-heading font-medium bg-white text-slate-700 border border-slate-300 px-3 py-1.5 rounded-lg hover:border-tech-500 hover:text-tech-600 transition">
+                            <i class="fa-solid fa-download mr-1"></i>ดาวน์โหลด
+                        </button>
+                    </div>
+
+                    <div class="flex justify-end pt-4 border-t border-slate-100">
+                        <button onclick="closeModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-heading text-xs px-4 py-2 rounded-lg font-medium">ปิด</button>
+                    </div>
+                </div>
+            `;
+            document.getElementById('global-modal').classList.remove('hidden');
+        }
+
+        // SPECIAL PROGRAM HUB PAGE
+        function renderSpecialProgramPage(container) {
+            const projects = JSON.parse(localStorage.getItem('ssms_projects')) || [];
+
+            container.innerHTML = `
+                <section class="bg-navy-900 text-white py-12 border-b border-slate-800">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <h1 class="text-3xl font-bold font-heading">ศูนย์โครงการพิเศษ & คลังงานวิจัย IS (IS & Research Hub)</h1>
+                        <p class="text-sm text-slate-400 mt-2">การจัดการเรียนรู้วิชาการศึกษาค้นคว้าด้วยตนเอง (Independent Study) และผลงานนวัตกรรมนักเรียน</p>
+                    </div>
+                </section>
+
+                <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12">
+                    <!-- Photo Gallery Section -->
+                    <div class="space-y-4">
+                        <h2 class="text-xl font-bold font-heading text-slate-900 border-l-4 border-tech-500 pl-3">บรรยากาศการเรียนรู้ & กิจกรรมการแข่งขัน</h2>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div onclick="openLightbox('https://placehold.co/800x600/0f172a/0ea5e9?text=Robotics+Lab+2026', 'ห้องปฏิบัติการหุ่นยนต์และปัญญาประดิษฐ์')" class="group relative rounded-xl overflow-hidden shadow-sm border border-slate-200 cursor-pointer">
+                                <img src="https://placehold.co/600x400/0f172a/0ea5e9?text=Robotics+Lab" class="w-full h-48 object-cover group-hover:scale-105 transition duration-300">
+                                <div class="absolute inset-0 bg-gradient-to-t from-navy-950/80 via-transparent to-transparent flex items-end p-4">
+                                    <span class="text-xs font-heading font-medium text-white">ห้องปฏิบัติการหุ่นยนต์และ AI</span>
+                                </div>
+                            </div>
+                            <div onclick="openLightbox('https://placehold.co/800x600/0f172a/0ea5e9?text=IS+Exhibition+2026', 'มหกรรมแสดงผลงานวิจัย IS')" class="group relative rounded-xl overflow-hidden shadow-sm border border-slate-200 cursor-pointer">
+                                <img src="https://placehold.co/600x400/0f172a/0ea5e9?text=IS+Exhibition" class="w-full h-48 object-cover group-hover:scale-105 transition duration-300">
+                                <div class="absolute inset-0 bg-gradient-to-t from-navy-950/80 via-transparent to-transparent flex items-end p-4">
+                                    <span class="text-xs font-heading font-medium text-white">มหกรรมแสดงผลงานวิจัยนักเรียน</span>
+                                </div>
+                            </div>
+                            <div onclick="openLightbox('https://placehold.co/800x600/0f172a/0ea5e9?text=International+Symposium', 'งานประชุมวิชาการระดับสากล')" class="group relative rounded-xl overflow-hidden shadow-sm border border-slate-200 cursor-pointer">
+                                <img src="https://placehold.co/600x400/0f172a/0ea5e9?text=International+Symposium" class="w-full h-48 object-cover group-hover:scale-105 transition duration-300">
+                                <div class="absolute inset-0 bg-gradient-to-t from-navy-950/80 via-transparent to-transparent flex items-end p-4">
+                                    <span class="text-xs font-heading font-medium text-white">การนำเสนอผลงานวิชาการระดับสากล</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- IS Projects Catalog -->
+                    <div class="space-y-6">
+                        <div class="flex items-center justify-between border-b border-slate-200 pb-4">
+                            <div>
+                                <h2 class="text-xl font-bold font-heading text-slate-900 border-l-4 border-tech-500 pl-3">คลังเค้าโครงวิจัยนวัตกรรม (IS Research Showcase)</h2>
+                                <p class="text-xs text-slate-500">ผลงานการศึกษาค้นคว้าด้วยตนเองของนักเรียนชั้นมัธยมศึกษาตอนปลาย</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            ${projects.map(p => `
+                                <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition flex flex-col justify-between space-y-4">
+                                    <div class="space-y-2">
+                                        <span class="bg-tech-50 text-tech-600 border border-tech-200 text-[10px] font-heading font-semibold px-2.5 py-0.5 rounded">${p.category}</span>
+                                        <h3 class="font-heading font-bold text-base text-slate-900">${p.title}</h3>
+                                        <p class="text-xs font-body text-slate-600 line-clamp-3">${p.abstract}</p>
+                                    </div>
+                                    <div class="pt-4 border-t border-slate-100 text-xs space-y-3">
+                                        <div class="text-slate-500">
+                                            <div><strong>ผู้วิจัย:</strong> ${p.student}</div>
+                                            <div><strong>ครูที่ปรึกษา:</strong> ${p.advisor}</div>
+                                        </div>
+                                        <div class="flex space-x-2">
+                                            <button onclick="viewProjectAbstract('${p.id}')" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-heading font-medium py-2 rounded-lg text-center transition">
+                                                อ่านบทคัดย่อ
+                                            </button>
+                                            <button onclick="showToast('กำลังดาวน์โหลดรูปเล่มรายงานฉบับสมบูรณ์ (PDF)...', 'info')" class="bg-tech-50 hover:bg-tech-100 text-tech-700 border border-tech-200 font-heading font-medium px-3 py-2 rounded-lg transition" title="Download Full Paper">
+                                                <i class="fa-solid fa-file-pdf"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </section>
+            `;
+        }
+
+        function openLightbox(imgUrl, caption) {
+            const modalContent = document.getElementById('global-modal-content');
+            modalContent.innerHTML = `
+                <div class="p-4 bg-navy-950 rounded-2xl text-white space-y-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs font-heading font-medium text-slate-300">${caption}</span>
+                        <button onclick="closeModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+                    </div>
+                    <img src="${imgUrl}" class="w-full h-auto rounded-lg max-h-[70vh] object-contain">
+                </div>
+            `;
+            document.getElementById('global-modal').classList.remove('hidden');
+        }
+
+        function viewProjectAbstract(id) {
+            const projects = JSON.parse(localStorage.getItem('ssms_projects')) || [];
+            const proj = projects.find(p => p.id === id);
+            if (!proj) return;
+
+            const modalContent = document.getElementById('global-modal-content');
+            modalContent.innerHTML = `
+                <div class="p-6 sm:p-8 space-y-6">
+                    <div class="flex justify-between items-start border-b pb-4">
+                        <div>
+                            <span class="bg-tech-50 text-tech-600 border border-tech-200 text-[10px] font-heading px-2 py-0.5 rounded font-semibold">${proj.category}</span>
+                            <h3 class="text-lg font-bold font-heading text-slate-900 mt-1">${proj.title}</h3>
+                        </div>
+                        <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="text-xs font-heading font-semibold text-slate-400 uppercase">คณะผู้จัดทำ & ครูที่ปรึกษา</h4>
+                            <p class="text-xs text-slate-700 mt-1">นักเรียน: ${proj.student} | ครูที่ปรึกษา: ${proj.advisor}</p>
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-heading font-semibold text-slate-400 uppercase">บทคัดย่อ (Abstract)</h4>
+                            <p class="text-sm font-body text-slate-700 leading-relaxed mt-1 bg-slate-50 p-4 rounded-xl border">${proj.abstract}</p>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end space-x-3 pt-4 border-t border-slate-100">
+                        <button onclick="showToast('กำลังส่งออกไฟล์ PDF...', 'info')" class="bg-tech-600 hover:bg-tech-700 text-white font-heading text-xs px-4 py-2 rounded-lg font-medium flex items-center space-x-1">
+                            <i class="fa-solid fa-download"></i>
+                            <span>ดาวน์โหลดรายงานฉบับสมบูรณ์ (PDF)</span>
+                        </button>
+                        <button onclick="closeModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-heading text-xs px-4 py-2 rounded-lg font-medium">ปิด</button>
+                    </div>
+                </div>
+            `;
+            document.getElementById('global-modal').classList.remove('hidden');
+        }
+
+        /* ==========================================================================
+           4. AUTHENTICATION CONTROLLER (LOGIN & LOGOUT)
+           ========================================================================== */
+        function renderLoginPage(container) {
+            container.innerHTML = `
+                <section class="min-h-[80vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-slate-100">
+                    <div class="max-w-md w-full bg-white rounded-2xl shadow-xl border border-slate-200 p-8 space-y-6">
+                        <div class="text-center space-y-2">
+                            <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-navy-900 to-tech-600 flex items-center justify-center text-white font-bold text-2xl mx-auto shadow-md">
+                                SS
+                            </div>
+                            <h2 class="text-2xl font-bold font-heading text-slate-900">SSMS Enterprise Portal</h2>
+                            <p class="text-xs text-slate-500">ระบบบริหารจัดการสารสนเทศโรงเรียนศรีเลิศนานาชาติ</p>
+                        </div>
+
+                        <form onsubmit="handleLogin(event)" class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-heading font-semibold text-slate-700 mb-1">ชื่อผู้ใช้งาน (Username / Account ID)</label>
+                                <input type="text" id="login-username" required class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-tech-500 focus:border-tech-500 text-sm font-mono outline-none transition" placeholder="กรอกชื่อผู้ใช้">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-heading font-semibold text-slate-700 mb-1">รหัสผ่าน (Password)</label>
+                                <input type="password" id="login-password" required class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-tech-500 focus:border-tech-500 text-sm font-mono outline-none transition" placeholder="••••••••">
+                            </div>
+
+                            <button type="submit" class="w-full bg-tech-600 hover:bg-tech-700 text-white font-heading font-semibold py-3 rounded-xl shadow-lg shadow-tech-500/20 transition duration-200">
+                                เข้าสู่ระบบสารสนเทศ
+                            </button>
+                        </form>
+
+                        <div class="pt-4 border-t border-slate-100 text-center">
+                            <p class="text-[11px] text-slate-400">
+                                ติดต่อฝ่ายเทคโนโลยีสารสนเทศเพื่อขอรับการยืนยันตัวตนหรือรีเซ็ตรหัสผ่าน <br>
+                                <span class="font-mono text-slate-500">SSMS Security Protocol v4.5</span>
+                            </p>
+                        </div>
+                    </div>
+                </section>
+            `;
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const uInput = document.getElementById('login-username').value.trim();
+            const pInput = document.getElementById('login-password').value.trim();
+
+            const users = JSON.parse(localStorage.getItem('ssms_users')) || [];
+            const foundUser = users.find(u => u.username === uInput && u.passwordHash === pInput);
+
+            if (foundUser) {
+                currentUser = foundUser;
+                localStorage.setItem('ssms_current_user', JSON.stringify(currentUser));
+                showToast(`ยินดีต้อนรับคุณ ${currentUser.name}`, 'success');
+                navigateTo('dashboard');
+            } else {
+                showToast('ชื่อผู้ใช้งานหรือรหัสผ่านไม่ถูกต้อง', 'error');
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('ssms_current_user');
+            showToast('ออกจากระบบเรียบร้อยแล้ว', 'info');
+            navigateTo('home');
+        }
+
+        /* ==========================================================================
+           5. DASHBOARD ROUTER & ROLE-BASED PANELS
+           ========================================================================== */
+        function renderDashboardPage(container) {
+            container.innerHTML = `
+                <div class="min-h-screen bg-slate-100 flex flex-col md:flex-row">
+                    <!-- Dashboard Sidebar -->
+                    <aside class="w-full md:w-64 bg-navy-900 text-slate-300 border-r border-slate-800 p-6 flex flex-col justify-between space-y-6">
+                        <div class="space-y-6">
+                            <!-- User Profile Info -->
+                            <div class="p-4 rounded-xl bg-slate-800/60 border border-slate-700/60 flex items-center space-x-3">
+                                <div class="w-10 h-10 rounded-full bg-tech-600 text-white flex items-center justify-center font-bold font-heading text-sm">
+                                    ${currentUser.name.charAt(0)}
+                                </div>
+                                <div class="overflow-hidden">
+                                    <div class="text-xs font-heading font-bold text-white truncate">${currentUser.name}</div>
+                                    <div class="text-[10px] text-tech-400 font-mono uppercase">${getRoleLabel(currentUser.role)}</div>
+                                </div>
+                            </div>
+
+                            <!-- Role Menu Nav -->
+                            <nav class="space-y-1 font-heading text-xs">
+                                <div class="px-3 py-2 text-[10px] font-semibold text-slate-500 uppercase tracking-wider">เมนูจัดการระบบ</div>
+                                <button class="w-full text-left px-3 py-2.5 rounded-lg bg-tech-600 text-white font-medium flex items-center space-x-2">
+                                    <i class="fa-solid fa-table-cells text-sm"></i>
+                                    <span>แผงควบคุมหลัก</span>
+                                </button>
+                                <button onclick="navigateTo('home')" class="w-full text-left px-3 py-2.5 rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white font-medium flex items-center space-x-2 transition">
+                                    <i class="fa-solid fa-globe text-sm"></i>
+                                    <span>กลับหน้าเว็บหลัก</span>
+                                </button>
+                            </nav>
+                        </div>
+
+                        <button onclick="logout()" class="w-full bg-slate-800 hover:bg-rose-900/40 text-slate-300 hover:text-rose-400 border border-slate-700 px-4 py-2.5 rounded-xl font-heading text-xs font-semibold transition flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                            <span>ออกจากระบบ</span>
+                        </button>
+                    </aside>
+
+                    <!-- Main Dashboard Workspace -->
+                    <main class="flex-1 p-6 sm:p-10 overflow-y-auto" id="dashboard-workspace">
+                        <!-- Role Panel Rendered Here -->
+                    </main>
+                </div>
+            `;
+
+            const workspace = document.getElementById('dashboard-workspace');
+
+            switch(currentUser.role) {
+                case 'superadmin':
+                    renderSuperAdminDashboard(workspace);
+                    break;
+                case 'teacher':
+                    renderTeacherDashboard(workspace);
+                    break;
+                case 'staff':
+                    renderStaffDashboard(workspace);
+                    break;
+                case 'student':
+                    renderStudentDashboard(workspace);
+                    break;
+                default:
+                    workspace.innerHTML = `<p>Role non-recognized</p>`;
+            }
+        }
+
+        /* --------------------------------------------------------------------------
+           5.1 SUPER ADMIN DASHBOARD
+           -------------------------------------------------------------------------- */
+        function renderSuperAdminDashboard(container) {
+            const users = JSON.parse(localStorage.getItem('ssms_users')) || [];
+
+            container.innerHTML = `
+                <div class="space-y-8">
+                    <div>
+                        <h1 class="text-2xl font-bold font-heading text-slate-900">Super Admin Dashboard</h1>
+                        <p class="text-xs text-slate-500">ศูนย์ควบคุมบัญชีผู้ใช้ และการตั้งค่าระบบความปลอดภัยองค์กร</p>
+                    </div>
+
+                    <!-- Metrics -->
+                    <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                            <div class="text-xs text-slate-500 font-heading">ผู้ใช้งานทั้งหมด</div>
+                            <div class="text-2xl font-bold text-slate-900 font-heading mt-1">${users.length}</div>
+                        </div>
+                        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                            <div class="text-xs text-slate-500 font-heading">สถานะ เซิร์ฟเวอร์</div>
+                            <div class="text-sm font-bold text-emerald-600 font-heading mt-2"><i class="fa-solid fa-circle text-[10px] mr-1"></i>Online (Active)</div>
+                        </div>
+                        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                            <div class="text-xs text-slate-500 font-heading">ปีการศึกษาปัจจุบัน</div>
+                            <div class="text-lg font-bold text-slate-900 font-heading mt-1">2026 / Term 2</div>
+                        </div>
+                        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                            <div class="text-xs text-slate-500 font-heading">SMTP Email Dispatch</div>
+                            <div class="text-sm font-bold text-tech-600 font-heading mt-2"><i class="fa-solid fa-check text-xs mr-1"></i>Connected</div>
+                        </div>
+                    </div>
+
+                    <!-- User Management CRUD -->
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 space-y-6">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <h2 class="text-lg font-bold font-heading text-slate-800">จัดการบัญชีผู้ใช้งานระบบ (User Registry)</h2>
+                            <button onclick="openAddUserModal()" class="bg-tech-600 hover:bg-tech-700 text-white font-heading text-xs font-semibold px-4 py-2 rounded-lg transition">
+                                <i class="fa-solid fa-user-plus mr-1"></i>เพิ่มผู้ใช้งานใหม่
+                            </button>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs border-collapse">
+                                <thead>
+                                    <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 font-heading font-semibold">
+                                        <th class="p-3">Username</th>
+                                        <th class="p-3">ชื่อ-นามสกุล</th>
+                                        <th class="p-3">บทบาท (Role)</th>
+                                        <th class="p-3">อีเมล</th>
+                                        <th class="p-3 text-right">การจัดการ</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 font-body">
+                                    ${users.map(u => `
+                                        <tr class="hover:bg-slate-50/80">
+                                            <td class="p-3 font-mono text-slate-800 font-semibold">${u.username}</td>
+                                            <td class="p-3 font-medium text-slate-900">${u.name}</td>
+                                            <td class="p-3"><span class="bg-slate-100 border text-slate-700 px-2 py-0.5 rounded text-[10px] font-heading font-semibold">${u.role}</span></td>
+                                            <td class="p-3 text-slate-500 font-mono">${u.email || '-'}</td>
+                                            <td class="p-3 text-right space-x-2">
+                                                <button onclick="resetUserPassword('${u.id}')" class="text-slate-500 hover:text-tech-600 text-xs" title="Reset Password"><i class="fa-solid fa-key"></i></button>
+                                                <button onclick="deleteUser('${u.id}')" class="text-slate-500 hover:text-rose-600 text-xs" title="Delete Account"><i class="fa-solid fa-trash"></i></button>
+                                            </td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function openAddUserModal() {
+            const modalContent = document.getElementById('global-modal-content');
+            modalContent.innerHTML = `
+                <div class="p-6 sm:p-8 space-y-6">
+                    <div class="flex justify-between items-center border-b pb-4">
+                        <h3 class="text-lg font-bold font-heading text-slate-900">เพิ่มผู้ใช้งานใหม่ในระบบ</h3>
+                        <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+                    </div>
+
+                    <form onsubmit="submitAddUser(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-heading font-semibold text-slate-700 mb-1">Username</label>
+                            <input type="text" id="new-username" required class="w-full px-3 py-2 rounded-lg border border-slate-300 text-xs font-mono">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-heading font-semibold text-slate-700 mb-1">Password</label>
+                            <input type="password" id="new-password" required class="w-full px-3 py-2 rounded-lg border border-slate-300 text-xs font-mono">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-heading font-semibold text-slate-700 mb-1">ชื่อ-นามสกุล</label>
+                            <input type="text" id="new-fullname" required class="w-full px-3 py-2 rounded-lg border border-slate-300 text-xs">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-heading font-semibold text-slate-700 mb-1">บทบาท (Role)</label>
+                            <select id="new-role" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-xs font-heading">
+                                <option value="student">Student (นักเรียน)</option>
+                                <option value="teacher">Teacher (อาจารย์)</option>
+                                <option value="staff">Staff (เจ้าหน้าที่)</option>
+                                <option value="superadmin">Super Admin (ผู้ดูแลระบบ)</option>
+                            </select>
+                        </div>
+
+                        <div class="flex justify-end space-x-3 pt-4 border-t">
+                            <button type="button" onclick="closeModal()" class="px-4 py-2 rounded-lg bg-slate-100 text-xs font-heading font-medium text-slate-700">ยกเลิก</button>
+                            <button type="submit" class="px-4 py-2 rounded-lg bg-tech-600 text-white text-xs font-heading font-semibold">บันทึกข้อมูล</button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            document.getElementById('global-modal').classList.remove('hidden');
+        }
+
+        function submitAddUser(e) {
+            e.preventDefault();
+            const users = JSON.parse(localStorage.getItem('ssms_users')) || [];
+            const newUser = {
+                id: `usr-${Date.now()}`,
+                username: document.getElementById('new-username').value.trim(),
+                passwordHash: document.getElementById('new-password').value.trim(),
+                name: document.getElementById('new-fullname').value.trim(),
+                role: document.getElementById('new-role').value,
+                email: `${document.getElementById('new-username').value.trim()}@ssms.ac.th`
+            };
+
+            users.push(newUser);
+            localStorage.setItem('ssms_users', JSON.stringify(users));
+            showToast('เพิ่มผู้ใช้งานใหม่สำเร็จ', 'success');
+            closeModal();
+            navigateTo('dashboard');
+        }
+
+        function deleteUser(userId) {
+            let users = JSON.parse(localStorage.getItem('ssms_users')) || [];
+            users = users.filter(u => u.id !== userId);
+            localStorage.setItem('ssms_users', JSON.stringify(users));
+            showToast('ลบบัญชีผู้ใช้เรียบร้อย', 'info');
+            navigateTo('dashboard');
+        }
+
+        function resetUserPassword(userId) {
+            const users = JSON.parse(localStorage.getItem('ssms_users')) || [];
+            const u = users.find(usr => usr.id === userId);
+            if (u) {
+                u.passwordHash = "reset1234";
+                localStorage.setItem('ssms_users', JSON.stringify(users));
+                showToast(`รีเซ็ตรหัสผ่านของ ${u.username} เป็น 'reset1234' แล้ว`, 'success');
+            }
+        }
+
+        /* --------------------------------------------------------------------------
+           5.2 TEACHER DASHBOARD (WITH QR CODE ATTENDANCE SCANNER HERE!)
+           -------------------------------------------------------------------------- */
+        function renderTeacherDashboard(container) {
+            const attendanceLogs = JSON.parse(localStorage.getItem('ssms_attendance')) || [];
+
+            container.innerHTML = `
+                <div class="space-y-8">
+                    <div>
+                        <h1 class="text-2xl font-bold font-heading text-slate-900">Teacher Academic Portal</h1>
+                        <p class="text-xs text-slate-500">ยินดีต้อนรับ ${currentUser.name} | สาขาวิชา: ${currentUser.subject || 'วิชาการ'}</p>
+                    </div>
+
+                    <!-- ATTENDANCE QR SCANNER CONTAINER (CRITICAL REQUIREMENT: LOCATED IN TEACHER DASHBOARD) -->
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sm:p-8 space-y-6">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-slate-100 pb-4 gap-4">
+                            <div>
+                                <h2 class="text-lg font-bold font-heading text-slate-900 flex items-center">
+                                    <i class="fa-solid fa-qrcode text-tech-600 mr-2"></i>
+                                    ระบบเช็คชื่อด้วย QR Code (Attendance Scanner)
+                                </h2>
+                                <p class="text-xs text-slate-500">ใช้กล้องสแกนบัตรนักเรียนดิจิทัล หรือกรอกรหัสนักเรียนเพื่อบันทึกเวลาเรียน Real-time</p>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button onclick="startQRCameraScanner()" class="bg-tech-600 hover:bg-tech-700 text-white font-heading text-xs font-semibold px-4 py-2 rounded-xl transition flex items-center space-x-1">
+                                    <i class="fa-solid fa-camera"></i>
+                                    <span>เปิดกล้องสแกน</span>
+                                </button>
+                                <button onclick="stopQRCameraScanner()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-heading text-xs font-semibold px-3 py-2 rounded-xl transition">
+                                    ปิดกล้อง
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Camera Scanner Display Area -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+                            <div class="space-y-4">
+                                <div id="qr-reader" class="w-full bg-slate-900 rounded-xl overflow-hidden min-h-[250px] flex items-center justify-center text-slate-400 text-xs border border-slate-800">
+                                    <div class="text-center p-6 space-y-2">
+                                        <i class="fa-solid fa-video text-3xl text-slate-600"></i>
+                                        <div>กล้องยังไม่ทำงาน กด "เปิดกล้องสแกน" เพื่อเริ่มสแกน QR Code</div>
+                                    </div>
+                                </div>
+
+                                <!-- Manual Entry Payload Fallback -->
+                                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                                    <label class="block text-xs font-heading font-semibold text-slate-700">หรือระบุรหัสนักเรียนด้วยตนเอง (Manual Payload)</label>
+                                    <div class="flex space-x-2">
+                                        <input type="text" id="manual-std-id" placeholder="STD-2026-8801" class="flex-1 px-3 py-2 rounded-lg border border-slate-300 text-xs font-mono outline-none">
+                                        <button onclick="processManualAttendance()" class="bg-navy-900 hover:bg-navy-800 text-white font-heading text-xs px-4 py-2 rounded-lg transition font-medium">บันทึกเวลา</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Live Log Result Box -->
+                            <div class="space-y-3">
+                                <h3 class="text-xs font-heading font-semibold text-slate-700 uppercase tracking-wider">ประวัติบันทึกเข้าชั้นเรียนล่าสุด</h3>
+                                <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 max-h-[340px] overflow-y-auto space-y-2 custom-scrollbar">
+                                    ${attendanceLogs.slice().reverse().map(log => `
+                                        <div class="bg-white p-3 rounded-lg border border-slate-100 flex items-center justify-between text-xs">
+                                            <div>
+                                                <div class="font-heading font-bold text-slate-800">${log.name}</div>
+                                                <div class="text-[10px] text-slate-400 font-mono">${log.studentId} • ${log.method}</div>
+                                            </div>
+                                            <div class="text-right">
+                                                <span class="bg-emerald-50 text-emerald-600 border border-emerald-200 px-2 py-0.5 rounded text-[10px] font-heading font-semibold">${log.status}</span>
+                                                <div class="text-[10px] text-slate-400 font-mono mt-0.5">${log.timestamp}</div>
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Class Schedule & Grading Table -->
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-4">
+                        <h2 class="text-lg font-bold font-heading text-slate-900">รายวิชาที่รับผิดชอบ (Academic Classes)</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="p-4 rounded-xl border border-slate-200 bg-slate-50/50 flex justify-between items-center">
+                                <div>
+                                    <div class="font-heading font-bold text-slate-800 text-sm">CS601: Computer Science & Robotics</div>
+                                    <div class="text-xs text-slate-500">ชั้นมัธยมศึกษาปีที่ 6/1 • ห้อง 402</div>
+                                </div>
+                                <button onclick="showToast('เปิดระบบลงทะเบียนตัดเกรด CS601', 'info')" class="bg-white border border-slate-300 hover:border-tech-500 text-xs font-heading font-medium px-3 py-1.5 rounded-lg transition">ตัดเกรด</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function startQRCameraScanner() {
+            if (html5QrCodeScanner) return;
+            html5QrCodeScanner = new Html5QrcodeScanner("qr-reader", { fps: 10, qrbox: { width: 220, height: 220 } }, false);
+            html5QrCodeScanner.render((decodedText) => {
+                recordAttendanceLog(decodedText, "QR Camera");
+                showToast(`สแกนสำเร็จ: ${decodedText}`, 'success');
+            }, (err) => {});
+        }
+
+        function stopQRCameraScanner() {
+            if (html5QrCodeScanner) {
+                html5QrCodeScanner.clear();
+                html5QrCodeScanner = null;
+                document.getElementById('qr-reader').innerHTML = `
+                    <div class="text-center p-6 space-y-2">
+                        <i class="fa-solid fa-video text-3xl text-slate-600"></i>
+                        <div>กล้องยังไม่ทำงาน กด "เปิดกล้องสแกน" เพื่อเริ่มสแกน QR Code</div>
+                    </div>
+                `;
+            }
+        }
+
+        function processManualAttendance() {
+            const val = document.getElementById('manual-std-id').value.trim();
+            if (!val) {
+                showToast('กรุณากรอกรหัสนักเรียน', 'warning');
+                return;
+            }
+            recordAttendanceLog(val, "Manual Entry");
+            document.getElementById('manual-std-id').value = '';
+        }
+
+        function recordAttendanceLog(studentPayload, method) {
+            const logs = JSON.parse(localStorage.getItem('ssms_attendance')) || [];
+            const users = JSON.parse(localStorage.getItem('ssms_users')) || [];
+            const matchedUser = users.find(u => u.studentId === studentPayload || u.username === studentPayload);
+
+            const newLog = {
+                id: `att-${Date.now()}`,
+                studentId: studentPayload,
+                name: matchedUser ? matchedUser.name : `นักเรียน (${studentPayload})`,
+                timestamp: new Date().toLocaleString('th-TH'),
+                status: "Present",
+                method: method
+            };
+
+            logs.push(newLog);
+            localStorage.setItem('ssms_attendance', JSON.stringify(logs));
+            navigateTo('dashboard');
+            showToast(`บันทึกเวลาเรียนสำเร็จ: ${newLog.name}`, 'success');
+        }
+
+        /* --------------------------------------------------------------------------
+           5.3 STAFF DASHBOARD
+           -------------------------------------------------------------------------- */
+        function renderStaffDashboard(container) {
+            const announcements = JSON.parse(localStorage.getItem('ssms_announcements')) || [];
+
+            container.innerHTML = `
+                <div class="space-y-8">
+                    <div>
+                        <h1 class="text-2xl font-bold font-heading text-slate-900">Staff & Admin Operations Portal</h1>
+                        <p class="text-xs text-slate-500">ระบบเจ้าหน้าที่บริหารงานวิชาการและระบบกระจายข่าวสาร (Email Dispatcher)</p>
+                    </div>
+
+                    <!-- Announcement Broadcast Simulation -->
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-6">
+                        <h2 class="text-lg font-bold font-heading text-slate-800">สร้างประกาศข่าวสาร & ส่งอีเมลบรอดแคสต์</h2>
+                        <form onsubmit="submitNewAnnouncement(event)" class="space-y-4">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-heading font-semibold text-slate-700 mb-1">หัวข้อประกาศ</label>
+                                    <input type="text" id="ann-title" required class="w-full px-3 py-2 rounded-lg border border-slate-300 text-xs">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-heading font-semibold text-slate-700 mb-1">หมวดหมู่</label>
+                                    <select id="ann-category" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-xs font-heading">
+                                        <option value="General">ทั่วไป</option>
+                                        <option value="Students">สำหรับนักเรียน</option>
+                                        <option value="Staff">สำหรับบุคลากร</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-heading font-semibold text-slate-700 mb-1">รายละเอียด announcement</label>
+                                <textarea id="ann-content" rows="4" required class="w-full px-3 py-2 rounded-lg border border-slate-300 text-xs font-body"></textarea>
+                            </div>
+
+                            <div class="flex items-center justify-between">
+                                <label class="flex items-center space-x-2 text-xs font-heading text-slate-700">
+                                    <input type="checkbox" id="ann-pinned" class="rounded text-tech-600 focus:ring-tech-500">
+                                    <span>ปักหมุดข่าวนี้เป็นข่าวสารด่วนที่สุด</span>
+                                </label>
+                                <button type="submit" class="bg-tech-600 hover:bg-tech-700 text-white font-heading text-xs font-semibold px-5 py-2.5 rounded-xl shadow-md transition">
+                                    <i class="fa-solid fa-paper-plane mr-1"></i>ออกประกาศ & กระจายอีเมล
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+        }
+
+        function submitNewAnnouncement(e) {
+            e.preventDefault();
+            const announcements = JSON.parse(localStorage.getItem('ssms_announcements')) || [];
+            const newAnn = {
+                id: `ann-${Date.now()}`,
+                title: document.getElementById('ann-title').value.trim(),
+                category: document.getElementById('ann-category').value,
+                pinned: document.getElementById('ann-pinned').checked,
+                date: new Date().toISOString().split('T')[0],
+                author: currentUser.name,
+                content: document.getElementById('ann-content').value.trim()
+            };
+
+            announcements.unshift(newAnn);
+            localStorage.setItem('ssms_announcements', JSON.stringify(announcements));
+            showToast('เผยแพร่ประกาศและส่งอีเมลแจ้งเตือนเรียบร้อยแล้ว', 'success');
+            navigateTo('dashboard');
+        }
+
+        /* --------------------------------------------------------------------------
+           5.4 STUDENT DASHBOARD
+           -------------------------------------------------------------------------- */
+        function renderStudentDashboard(container) {
+            const attendanceLogs = JSON.parse(localStorage.getItem('ssms_attendance')) || [];
+            const myAttendance = attendanceLogs.filter(a => a.studentId === (currentUser.studentId || currentUser.username));
+
+            container.innerHTML = `
+                <div class="space-y-8">
+                    <div>
+                        <h1 class="text-2xl font-bold font-heading text-slate-900">Student Personal Portal</h1>
+                        <p class="text-xs text-slate-500">ยินดีต้อนรับ ${currentUser.name} | รหัสนักเรียน: ${currentUser.studentId || 'STD-2026-8801'}</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <!-- Digital Student ID Card (Left Col) -->
+                        <div class="bg-gradient-to-br from-navy-900 via-navy-800 to-tech-900 rounded-2xl p-6 text-white shadow-xl border border-slate-700 relative overflow-hidden space-y-6">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <div class="text-[10px] font-heading font-semibold text-tech-400 tracking-wider uppercase">International Student ID</div>
+                                    <div class="font-heading font-bold text-lg">โรงเรียนศรีเลิศนานาชาติ</div>
+                                </div>
+                                <div class="w-8 h-8 rounded-lg bg-tech-500/20 border border-tech-400/30 flex items-center justify-center font-bold font-heading text-xs text-tech-300">
+                                    SS
+                                </div>
+                            </div>
+
+                            <div class="flex items-center space-x-4">
+                                <img src="https://placehold.co/150x150/0f172a/38bdf8?text=Student" class="w-20 h-20 rounded-xl border-2 border-tech-400 object-cover shadow-md">
+                                <div class="space-y-1">
+                                    <h3 class="font-heading font-bold text-base text-white">${currentUser.name}</h3>
+                                    <p class="text-xs text-slate-300 font-mono">ID: ${currentUser.studentId || 'STD-2026-8801'}</p>
+                                    <p class="text-xs text-tech-400 font-heading">ชั้นมัธยมศึกษาปีที่ 6/1</p>
+                                </div>
+                            </div>
+
+                            <!-- QR Code Container -->
+                            <div class="bg-white p-4 rounded-xl flex flex-col items-center justify-center space-y-2">
+                                <div id="student-qrcode-box"></div>
+                                <span class="text-[10px] text-slate-500 font-mono">ให้ครูสแกนเพื่อบันทึกเวลาเรียน</span>
+                            </div>
+                        </div>
+
+                        <!-- Grades & Attendance Details (Right Col) -->
+                        <div class="lg:col-span-2 space-y-6">
+                            <!-- Academic GPA Summary -->
+                            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+                                <div>
+                                    <div class="text-xs text-slate-500 font-heading">เกรดเฉลี่ยสะสม (Cumulative GPA)</div>
+                                    <div class="text-3xl font-bold font-heading text-tech-600 mt-1">${currentUser.gpa || '3.92'}</div>
+                                </div>
+                                <div class="text-right">
+                                    <span class="bg-emerald-50 text-emerald-600 border border-emerald-200 text-xs font-heading px-3 py-1 rounded-full font-semibold">สถานะปกติ (Active)</span>
+                                </div>
+                            </div>
+
+                            <!-- Attendance Logs -->
+                            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-4">
+                                <h3 class="text-base font-bold font-heading text-slate-900">ประวัติการเข้าเรียน (Personal Attendance)</h3>
+                                <div class="space-y-2 max-h-[220px] overflow-y-auto custom-scrollbar">
+                                    ${myAttendance.length > 0 ? myAttendance.map(att => `
+                                        <div class="p-3 bg-slate-50 rounded-lg border border-slate-100 flex justify-between items-center text-xs">
+                                            <div>
+                                                <div class="font-heading font-semibold text-slate-800">${att.timestamp}</div>
+                                                <div class="text-[10px] text-slate-400">วิธีเช็คชื่อ: ${att.method}</div>
+                                            </div>
+                                            <span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-[10px] font-heading font-semibold">${att.status}</span>
+                                        </div>
+                                    `).join('') : '<p class="text-xs text-slate-400 py-4 text-center">ยังไม่มีประวัติการสแกนเข้าเรียน</p>'}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Generate Student QR Code using qrcodejs library
+            setTimeout(() => {
+                const qrContainer = document.getElementById('student-qrcode-box');
+                if (qrContainer) {
+                    qrContainer.innerHTML = "";
+                    new QRCode(qrContainer, {
+                        text: currentUser.studentId || 'STD-2026-8801',
+                        width: 128,
+                        height: 128,
+                        colorDark : "#0f172a",
+                        colorLight : "#ffffff",
+                        correctLevel : QRCode.CorrectLevel.H
+                    });
+                }
+            }, 100);
+        }
+
+        /* ==========================================================================
+           6. UTILITY FUNCTIONS & TOAST NOTIFICATIONS
+           ========================================================================== */
+        function closeModal() {
+            document.getElementById('global-modal').classList.add('hidden');
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            let bgClass = 'bg-navy-900 border-tech-500 text-white';
+            if (type === 'success') bgClass = 'bg-emerald-950 border-emerald-500 text-emerald-100';
+            if (type === 'error') bgClass = 'bg-rose-950 border-rose-500 text-rose-100';
+            if (type === 'warning') bgClass = 'bg-amber-950 border-amber-500 text-amber-100';
+
+            toast.className = `p-4 rounded-xl border shadow-xl text-xs font-heading font-medium flex items-center space-x-3 pointer-events-auto transform transition duration-300 translate-y-2 ${bgClass}`;
+            toast.innerHTML = `
+                <i class="fa-solid ${type === 'success' ? 'fa-circle-check text-emerald-400' : type === 'error' ? 'fa-circle-xmark text-rose-400' : 'fa-circle-info text-tech-400'}"></i>
+                <span>${message}</span>
+            `;
+
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.remove('translate-y-2'), 10);
+            setTimeout(() => {
+                toast.classList.add('opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        // Initialize App View
+        window.onload = function() {
+            navigateTo('home');
+        };
+    </script>
+</body>
+</html>
